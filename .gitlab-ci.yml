@@ -1,0 +1,9 @@
+---
+before_script:
+  - docker login -u $CI_REGISTRY_USER -p $CI_JOB_TOKEN $CI_REGISTRY > /dev/null
+
+images:
+  script:
+    - docker build --pull --no-cache -t $CI_REGISTRY_IMAGE:latest base/
+    - docker build --pull --no-cache -t $CI_REGISTRY_IMAGE:latest-checks checks/
+    - docker push $CI_REGISTRY_IMAGE:latest $CI_REGISTRY_IMAGE:latest-checks
