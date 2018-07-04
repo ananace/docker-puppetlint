@@ -5,6 +5,7 @@ services:
 
 stages:
   - build
+  - promote
 
 before_script:
   - docker login -u $CI_REGISTRY_USER -p $CI_JOB_TOKEN $CI_REGISTRY > /dev/null
@@ -18,3 +19,22 @@ images:
     - docker push $CI_REGISTRY_IMAGE:latest-checks
   only:
     - master
+
+promote:
+  stage: promote
+  before_script:
+    - docker login -u $PROMOTE_USER -p $PROMOTE_PASS $PROMOTE_REGISTRY > /dev/null
+  script:
+    - docker pull $CI_REGISTRY_IMAGE:latest $CI_REGISTRY_IMAGE:latest-checks
+    - docker tag $CI_REGISTRY_IMAGE:latest $PROMOTE_IMAGE:latest
+    - docker tag $CI_REGISTRY_IMAGE:latest-checks $PROMOTE_IMAGE:latest-checks
+    - docker push $PROMOTE_IMAGE:latest
+    - docker push $PROMOTE_IMAGE:latest-checks
+  only:
+    refs:
+      - master
+    variables:
+      - $PROMOTE_USER
+      - $PROMOTE_PASS
+      - $PROMOTE_REGISTRY
+      - $PROMOTE_IMAGE
