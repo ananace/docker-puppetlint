@@ -23,9 +23,10 @@ images:
 promote:
   stage: promote
   before_script:
-    - docker login -u $PROMOTE_USER -p $PROMOTE_PASS $PROMOTE_REGISTRY > /dev/null
+    - docker login -u $PROMOTE_USER -p $PROMOTE_PASS $PROMOTE_REGISTRY > /dev/null 2> /dev/null
   script:
-    - docker pull $CI_REGISTRY_IMAGE:latest $CI_REGISTRY_IMAGE:latest-checks
+    - docker pull $CI_REGISTRY_IMAGE:latest
+    - docker pull $CI_REGISTRY_IMAGE:latest-checks
     - docker tag $CI_REGISTRY_IMAGE:latest $PROMOTE_IMAGE:latest
     - docker tag $CI_REGISTRY_IMAGE:latest-checks $PROMOTE_IMAGE:latest-checks
     - docker push $PROMOTE_IMAGE:latest
