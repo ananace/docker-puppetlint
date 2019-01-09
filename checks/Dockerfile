@@ -2,7 +2,7 @@ FROM ananace/puppetlint:latest
 
 MAINTAINER Alexander Olofsson <alexander.olofsson@liu.se>
 
-RUN gem install --no-ri --no-rdoc -N \
+RUN gem install -N \
       puppet-lint-absolute_classname-check \
       puppet-lint-absolute_template_path \
       puppet-lint-appends-check \
