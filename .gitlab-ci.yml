@@ -1,36 +1,34 @@
 ---
-image: docker:latest
-services:
-  - docker:dind
-
 stages:
   - build
   - promote
 
-before_script:
-  - docker login -u $CI_REGISTRY_USER -p $CI_JOB_TOKEN $CI_REGISTRY > /dev/null
-
 images:
   stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: []
   script:
-    - docker build --pull --no-cache $DOCKER_PROXY -t $CI_REGISTRY_IMAGE:latest base/
-    - docker build --pull --no-cache $DOCKER_PROXY -t $CI_REGISTRY_IMAGE:latest-checks checks/
-    - docker push $CI_REGISTRY_IMAGE:latest
-    - docker push $CI_REGISTRY_IMAGE:latest-checks
+    - mkdir -p /root/.docker
+    - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"username\":\"${CI_REGISTRY_USER}\",\"password\":\"${CI_JOB_TOKEN}\"}}}" > /root/.docker/config.json
+    - /kaniko/executor --context ${CI_PROJECT_DIR} --dockerfile base/Dockerfile $DOCKER_PROXY --destination "${CI_REGISTRY_IMAGE}:latest"
+    - /kaniko/executor --context ${CI_PROJECT_DIR} --dockerfile checks/Dockerfile $DOCKER_PROXY --destination "${CI_REGISTRY_IMAGE}:latest-checks"
   only:
     - master
 
 promote:
   stage: promote
-  before_script:
-    - docker login -u $PROMOTE_USER -p $PROMOTE_PASS $PROMOTE_REGISTRY > /dev/null 2> /dev/null
+  image: centos:7
   script:
-    - docker pull $CI_REGISTRY_IMAGE:latest
-    - docker pull $CI_REGISTRY_IMAGE:latest-checks
-    - docker tag $CI_REGISTRY_IMAGE:latest $PROMOTE_IMAGE:latest
-    - docker tag $CI_REGISTRY_IMAGE:latest-checks $PROMOTE_IMAGE:latest-checks
-    - docker push $PROMOTE_IMAGE:latest
-    - docker push $PROMOTE_IMAGE:latest-checks
+    - yum -y install skopeo
+    #- skopeo copy --dest-creds "${CI_REGISTRY_USER}:${CI_JOB_TOKEN}" "docker://${CI_REGISTRY_IMAGE}:latest" "docker://${PROMOTE_IMAGE}:latest"
+    #- skopeo copy --dest-creds "${CI_REGISTRY_USER}:${CI_JOB_TOKEN}" "docker://${CI_REGISTRY_IMAGE}:latest-checks" "docker://${PROMOTE_IMAGE}:latest-checks"
+    #- docker pull $CI_REGISTRY_IMAGE:latest
+    #- docker pull $CI_REGISTRY_IMAGE:latest-checks
+    #- docker tag $CI_REGISTRY_IMAGE:latest $PROMOTE_IMAGE:latest
+    #- docker tag $CI_REGISTRY_IMAGE:latest-checks $PROMOTE_IMAGE:latest-checks
+    #- docker push $PROMOTE_IMAGE:latest
+    #- docker push $PROMOTE_IMAGE:latest-checks
   only:
     refs:
       - master
