@@ -3,7 +3,7 @@ stages:
   - build
   - promote
 
-images:
+build:images:
   stage: build
   image:
     name: gcr.io/kaniko-project/executor:debug
@@ -16,7 +16,7 @@ images:
   only:
     - master
 
-promote:
+promote:images:
   stage: promote
   image: ananace/skopeo
   script:
