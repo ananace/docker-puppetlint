@@ -12,7 +12,7 @@ build:images:
     - mkdir -p /root/.docker
     - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"username\":\"${CI_REGISTRY_USER}\",\"password\":\"${CI_JOB_TOKEN}\"}}}" > /root/.docker/config.json
     - /kaniko/executor --context ${CI_PROJECT_DIR} --dockerfile base/Dockerfile $DOCKER_PROXY --destination "${CI_REGISTRY_IMAGE}:latest"
-    - /kaniko/executor --context ${CI_PROJECT_DIR} --dockerfile checks/Dockerfile $DOCKER_PROXY --destination "${CI_REGISTRY_IMAGE}:latest-checks"
+    - /kaniko/executor --context ${CI_PROJECT_DIR} --dockerfile checks/Dockerfile --build-arg SRC_IMG="${CI_REGISTRY_IMAGE}:latest" $DOCKER_PROXY --destination "${CI_REGISTRY_IMAGE}:latest-checks"
   only:
     - master
 

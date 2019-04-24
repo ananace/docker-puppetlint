@@ -1,4 +1,5 @@
-FROM ananace/puppetlint:latest
+ARG SRC_IMG=ananace/puppetlint:latest
+FROM $SRC_IMG
 
 MAINTAINER Alexander Olofsson <alexander.olofsson@liu.se>
 
