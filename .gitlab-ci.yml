@@ -22,6 +22,8 @@ promote:
   script:
     - /skopeo copy --src-creds "${CI_REGISTRY_USER}:${CI_JOB_TOKEN}" --dest-creds "${PROMOTE_USER}:${PROMOTE_PASS}" "docker://${CI_REGISTRY_IMAGE}:latest" "docker://${PROMOTE_IMAGE}:latest"
     - /skopeo copy --src-creds "${CI_REGISTRY_USER}:${CI_JOB_TOKEN}" --dest-creds "${PROMOTE_USER}:${PROMOTE_PASS}" "docker://${CI_REGISTRY_IMAGE}:latest-checks" "docker://${PROMOTE_IMAGE}:latest-checks"
+  variables:
+    GIT_STRATEGY: none
   only:
     refs:
       - master
