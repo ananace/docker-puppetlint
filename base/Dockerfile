@@ -3,7 +3,9 @@ FROM ruby:alpine
 MAINTAINER Alexander Olofsson <alexander.olofsson@liu.se>
 
 RUN gem install -N \
-      puppet puppet-lint metadata-json-lint
+      puppet puppet-lint metadata-json-lint \
+      sync \
+ && gem cleanup all
 
 VOLUME /code
 
