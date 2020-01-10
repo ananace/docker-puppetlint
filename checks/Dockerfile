@@ -18,4 +18,5 @@ RUN gem install -N \
       puppet-lint-trailing_comma-check \
       puppet-lint-unquoted_string-check \
       puppet-lint-variable_contains_upcase \
-      puppet-lint-version_comparison-check
+      puppet-lint-version_comparison-check \
+ && gem cleanup all
